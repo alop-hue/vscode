@@ -141,8 +141,17 @@ export class AgentHostStateManager extends Disposable {
 		return [...this._sessionStates.keys()];
 	}
 
-	getAnnouncedSessionSummaries(): SessionSummary[] {
-		return [...this._lastNotifiedSummaries.values()];
+	/**
+	 * Summaries for every session currently tracked in state, including
+	 * **provisional** sessions whose `sessionAdded` notification has been
+	 * deferred (see {@link createSession}). This surfaces a just-created
+	 * provisional session before it materializes — used by
+	 * `IAgentService.listSessions` to keep such a session in the overlay so a
+	 * transient empty `listSessions()` result cannot evict the active session
+	 * during its (potentially multi-second) provisional window.
+	 */
+	getAllSessionSummaries(): SessionSummary[] {
+		return [...this._sessionStates.values()].map(state => state.summary);
 	}
 
 	/**
